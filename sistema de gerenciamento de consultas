@@ -2,43 +2,60 @@ public class Main {
     public static void main(String[] args){
         Gerenciador gerenciador = new Gerenciador();
 
+        //Cadastro dos médicos
         gerenciador.cadastrarMedico("Dr. João", "123.124.654-96", "Reumatologista", "24.145-9");
         gerenciador.cadastrarMedico("Dr. Marcos", "564.145.635-07", "Proctologista", "36.456-2");
         gerenciador.cadastrarMedico("Dra. Júlia", "465.165.546-35", "Pediatra", "19.456-7");
         gerenciador.cadastrarMedico("Dra. Carmem", "785.665.412-12", "Ortorrinolaringologista", "09.463-1");
         gerenciador.cadastrarMedico("Dr. Pedro", "099.345.789-09", "Clínico Geral", "41.347-6");
 
-        String[] enfermidades0 = {"Hipertensão", "Diabetes"};
-        gerenciador.cadastrarPaciente("Elisabeth", "650.147.578-69", true, enfermidades0);
-        String[] enfermidades1 = {"Reumatismo", "Diabetes", "Obesidade"};
-        gerenciador.cadastrarPaciente("Carlos", "456.378.146-46", false, enfermidades1);
-        String[] enfermidades2 = {"Rinite","Alergia","Astigmatismo","Hepatite"};
-        gerenciador.cadastrarPaciente("Arnaldo", "653.145.256-02", true, enfermidades2);
-        String[] enfermidades3 = {"Osteoporose","Gastrite"};
-        gerenciador.cadastrarPaciente("Patrícia", "146.753.846-88", false, enfermidades3);
-        String[] enfermidades4 = {"Fratura"};
-        gerenciador.cadastrarPaciente("Maria", "645.123.479-13", true, enfermidades4);
+        //Cadastro dos pacientes
+        gerenciador.cadastrarPaciente("Elisabeth", "650.147.578-69", true, new String[] {"Hipertensão", "Diabetes"});
+        gerenciador.cadastrarPaciente("Carlos", "456.378.146-46", false, new String[] {"Reumatismo", "Diabetes", "Obesidade"});
+        gerenciador.cadastrarPaciente("Arnaldo", "653.145.256-02", true, new String[] {"Rinite","Alergia","Astigmatismo","Hepatite"});
+        gerenciador.cadastrarPaciente("Patrícia", "146.753.846-88", false, new String[] {"Osteoporose","Gastrite"});
+        gerenciador.cadastrarPaciente("Maria", "645.123.479-13", true, new String[] {"Fratura"});
 
+        //Cadastro das consultas
         gerenciador.cadastrarConsulta("123.124.654-99", "650.147.578-69", 3);
         gerenciador.cadastrarConsulta("123.124.654-96", "650.147.578-69", 2);
         gerenciador.cadastrarConsulta("123.124.654-96", "650.147.578-99", 4);
         gerenciador.cadastrarConsulta("099.345.789-09", "645.123.479-13", 2);
         gerenciador.cadastrarConsulta("099.345.789-09", "645.123.479-13", 3);
+        gerenciador.cadastrarConsulta("099.345.789-09", "645.123.479-13", 2);
+        gerenciador.cadastrarConsulta("465.165.546-35", "645.123.479-13", 3);
         gerenciador.cadastrarConsulta("785.665.412-12", "146.753.846-88", 10);
         gerenciador.cadastrarConsulta("099.345.789-09", "456.378.146-46", 7);
         gerenciador.cadastrarConsulta("564.145.635-07", "653.145.256-02", 5);
 
+        //Listar todas as consultas existentes no sistema
         gerenciador.listarConsultas();
+
+        //Excluir consulta
         gerenciador.excluirConsulta("123.124.654-96", "650.147.578-69", 1);
         gerenciador.excluirConsulta("123.124.654-96", "650.147.578-69", 2);
+
+        //Listar todas as consultas existentes no sistema
         gerenciador.listarConsultas();
+
+        //Listar os médicos cadastrados no sistema
         gerenciador.listarMedicos();
+
+        //Excluir médico do sistema
         gerenciador.excluirMedico("077.905.284-67");
         gerenciador.excluirMedico("564.145.635-07");
+
+        //Listar os médicos cadastrados no sistema
         gerenciador.listarMedicos();
+
+        //Listar os pacientes cadastrados no sistema
         gerenciador.listarPacientes();
+
+        //Excluir paciente do sistema
         gerenciador.excluirPaciente("077.905.284-67");
         gerenciador.excluirPaciente("456.378.146-46");
+
+        //Listar os pacientes cadastrados no sistema
         gerenciador.listarPacientes();
     }
 }
@@ -51,6 +68,7 @@ public class Gerenciador {
     ArrayList<Consulta> consultas;
     private Medico x;
     private Paciente y;
+    boolean first=true;
 
     public Gerenciador(){
         medicos = new ArrayList<Medico>();
@@ -71,43 +89,44 @@ public class Gerenciador {
     }
 
     public void cadastrarConsulta(String cpfMedico, String cpfPaciente, int dataAgendada){
-        int cont1=0;
-        int cont2=0;
-        int cont3=0;
+        int cont=0;
 
         for(Medico medico: medicos){
             if(medico.getCpf().equals(cpfMedico)){
                 x = medico;
-                cont1++;
-                break;
+                cont++;
             }
         }
-        for(Paciente paciente: pacientes){
-            if(paciente.getCpf().equals(cpfPaciente)){
-                y = paciente;
-                cont2++;
-                break;
-            }
-        }
-        for(Consulta consulta: consultas){
-            if(consulta.getDataAgendada() == dataAgendada){
-                cont3++;
-                break;
-            }
-        }
-        if(cont1 == 1 && cont2 == 1 && cont3 == 0){
-            Consulta consulta = new Consulta(x, y, dataAgendada);
-            consultas.add(consulta);
-            System.out.println("***************************************************\n\tConsulta Agendada!");
+        if(cont != 1){
+            System.out.println("***************************************************\n\tMédico não consta no sistema!");
         } else {
-            if(cont1 != 1 && cont2 == 1 && cont3 == 0){
-                System.out.println("***************************************************\n\tMédico não consta sistema!");
+            cont=0;
+            for(Paciente paciente: pacientes){
+                if(paciente.getCpf().equals(cpfPaciente)){
+                    y = paciente;
+                    cont++;
+                }
+            }
+            if(cont != 1){
+                System.out.println("***************************************************\n\tPaciente não consta no sistema!");            
             } else {
-                if(cont1 == 1 && cont2 != 1 && cont3 == 0){
-                    System.out.println("***************************************************\n\tPaciente não consta sistema!");
+                if(first == true){
+                    Consulta consulta = new Consulta(x, y, dataAgendada);
+                    consultas.add(consulta);
+                    System.out.println("***************************************************\n\tConsulta Agendada!");
+                    first = false;
                 } else {
-                    if(cont1 == 1 && cont2 == 1 && cont3 != 0){
-                        System.out.println("***************************************************\n\tData indisponível!");
+                    cont = 0;
+                    for(int i=0; i < consultas.size(); i++){
+                        if(consultas.get(i).getMedico().getCpf().equals(cpfMedico) && consultas.get(i).getPaciente().getCpf().equals(cpfPaciente) && consultas.get(i).getDataAgendada() == dataAgendada){
+                            System.out.println("***************************************************\n\tConsulta já agendada!");
+                            cont++;
+                        }
+                    }
+                    if(cont == 0){
+                        Consulta consulta = new Consulta(x, y, dataAgendada);
+                        consultas.add(consulta);
+                        System.out.println("***************************************************\n\tConsulta Agendada!");
                     }
                 }
             }
@@ -139,7 +158,7 @@ public class Gerenciador {
             }
             System.out.print("\nEnfermidades:");
             for(int i=0; paciente.getEnfermidadesRegistradas()[i] != null; i++){
-                System.out.print(" " + paciente.getEnfermidadesRegistradas()[i]);
+                System.out.print("  " + paciente.getEnfermidadesRegistradas()[i]);
             }
         }
         System.out.println();
