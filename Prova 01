@@ -1,1 +1,259 @@
+import utils.*;
 
+public class Main {
+
+    public static void main(String[] args) {
+      
+        //Cadastro de livros
+        BibliotecaFunctions.cadastarMaterial("Algebra Linear", "Gustavo Antunes", 2017, "4ª ed");
+        BibliotecaFunctions.cadastarMaterial("Quimica Fundamental", "Pedro Paulo de Arantes", 2001, "1ª ed");
+        BibliotecaFunctions.cadastarMaterial("Linguagem Java - Easy version", "Gustavo Guanabara", 2020, "2ª ed");
+        BibliotecaFunctions.cadastarMaterial("Estrutura basica de dados", "Willian Frederico", 1998, "2ª ed");
+        BibliotecaFunctions.cadastarMaterial("Fundamentos da educação contemporanea", "Paulo Freire", 1975, "8ª ed");
+        
+
+        //Cadastro de revistas
+        BibliotecaFunctions.cadastarMaterial("Epoca", "Globo", 45);
+        BibliotecaFunctions.cadastarMaterial("Galineu", "Abreu", 39);
+        BibliotecaFunctions.cadastarMaterial("Mundo Curioso", "Abril", 20);
+        BibliotecaFunctions.cadastarMaterial("SuperInteressante", "Abril", 41);
+        BibliotecaFunctions.cadastarMaterial("Cientifica", "UFCR", 41);
+
+        //Lista todas aos Materiais (livros e revistas)
+        BibliotecaFunctions.exibirListaMateriais();
+
+        //Pesquisar material - (Achar)
+        BibliotecaFunctions.pesquisarMaterial("Linguagem Java - Easy version");
+        
+        //Pesquisar material - (Não achar)
+        BibliotecaFunctions.pesquisarMaterial("Nada para pesquisar");
+
+        //Remove um material
+        BibliotecaFunctions.removerMaterial("Linguagem Java - Easy version");
+
+        //Pesquisar material - (Não achar por ter sido deletado)
+        BibliotecaFunctions.pesquisarMaterial("Linguagem Java - Easy version");
+    }
+}
+
+package DAO;
+import java.util.ArrayList;
+import model.*;
+
+//Escreva aqui todo o código
+public class BibliotecaDAO {
+    ArrayList<Material> materiais;
+    private static BibliotecaDAO banco;
+
+    private BibliotecaDAO(){
+        materiais = new ArrayList<Material>();
+    }
+
+    public ArrayList<Material> getArrayMateriais(){
+        return materiais;
+    }
+
+    public static BibliotecaDAO getInstance(){
+        if (banco == null){
+            banco = new BibliotecaDAO();
+        }
+        return banco;
+    }
+
+}
+
+package utils;
+
+import DAO.BibliotecaDAO;
+import model.*;
+
+//Escreva aqui todo o código
+public abstract class BibliotecaFunctions {
+
+    private static BibliotecaDAO bibliotecaDAO = BibliotecaDAO.getInstance();
+
+    public static void cadastarMaterial(String titulo, String autor, int anoLancamento, String edicao) {
+        Livro livro = new Livro(titulo, autor, anoLancamento, edicao);
+        bibliotecaDAO.getArrayMateriais().add(livro);
+    }
+
+    public static void cadastarMaterial(String titulo, String editora, int numeroPaginas) {
+        Revista revista = new Revista(titulo, editora, numeroPaginas);
+        bibliotecaDAO.getArrayMateriais().add(revista);
+    }
+    
+    public static void exibirListaMateriais() {
+        System.out.println("------------------------------------------\nMateriais na biblioteca:");
+        for (Material material : bibliotecaDAO.getArrayMateriais()) {
+            material.exibirDetalhes();
+        }
+    }
+
+    public static void pesquisarMaterial(String titulo) {
+        int x=0;
+        for (Material material : bibliotecaDAO.getArrayMateriais()) {
+            if (material instanceof Livro) {
+                Livro livro = (Livro) material;
+                if (titulo.equals(livro.getTitulo())) {
+                    System.out.println("------------------------------------------\nLivro encontrado:");
+                    livro.exibirDetalhes();
+                    x=1;
+                }
+            } else if (material instanceof Revista) {
+                Revista revista = (Revista) material;
+                if (titulo.equals(revista.getTitulo())) {
+                    System.out.println("------------------------------------------\nRevista encontrada:");
+                    revista.exibirDetalhes();
+                    x=1;
+                }
+            }
+        }
+        if(x==0){
+            System.out.println("------------------------------------------\nTítulo não encontrado!");
+        }
+    }
+
+    public static void removerMaterial(String titulo) {
+        int x = 0;
+        for (Material material : bibliotecaDAO.getArrayMateriais()) {
+            if (material instanceof Livro) {
+                Livro livro = (Livro) material;
+                if (titulo.equals(livro.getTitulo())) {
+                    bibliotecaDAO.getArrayMateriais().remove(livro);
+                    System.out.println("------------------------------------------\nLivro excluído!");
+                    x=1;
+                    break;
+                }
+            } else if (material instanceof Revista) {
+                Revista revista = (Revista) material;
+                if (titulo.equals(revista.getTitulo())) {
+                    bibliotecaDAO.getArrayMateriais().remove(revista);
+                    System.out.println("------------------------------------------\nRevista excluída!");
+                    x=1;
+                    break;
+                }
+            }
+        }
+        if(x==0){
+            System.out.println("------------------------------------------\nTítulo não encontrado!");
+        }
+    }
+}
+
+package model;
+
+//Escreva aqui todo o código
+public interface Material {
+    void exibirDetalhes();
+}
+
+package model;
+
+//Escreva aqui todo o código
+public class Livro implements Material {
+    protected String titulo;
+    protected String autor;
+    protected int anoLancamento;
+    protected String edicao;
+
+    public Livro(String titulo, String autor, int anoLancamento, String edicao){
+        this.titulo = titulo;
+        this.autor = autor;
+        this.anoLancamento = anoLancamento;
+        this.edicao = edicao;
+    }
+
+    public Livro(){
+    }
+
+    public String getTitulo(){
+        return titulo;
+    }
+
+    public void setTitulo(String titulo){
+        this.titulo = titulo;
+    }
+
+    public String getAutor(){
+        return autor;
+    }
+
+    public void setAutor(String autor){
+        this.autor = autor;
+    }
+
+    public int getAnoLancamento(){
+        return anoLancamento;
+    }
+
+    public void setAnoLancamento(int anoLancamento){
+        this.anoLancamento = anoLancamento;
+    }
+
+    public String getEdicao(){
+        return edicao;
+    }
+
+    public void setEdicao(String edicao){
+        this.edicao = edicao;
+    }
+
+    @Override
+    public void exibirDetalhes(){
+        System.out.println("\nLivro: " + titulo);
+        System.out.println("Autor: " + autor);
+        System.out.println("Ano de Lançamento: " + anoLancamento);
+        System.out.println("Edição: " + edicao);
+    }
+
+}
+
+package model;
+
+//Escreva aqui todo o código
+public class Revista implements Material {
+    protected String titulo;
+    protected String editora;
+    protected int numeroPaginas;
+
+    public Revista(String titulo, String editora, int numeroPaginas){
+        this.titulo = titulo;
+        this.editora = editora;
+        this.numeroPaginas = numeroPaginas;
+    }
+
+    public Revista(){
+    }
+
+    public String getTitulo(){
+        return titulo;
+    }
+
+    public void setTitulo(String titulo){
+        this.titulo = titulo;
+    }
+
+    public String getEditora(){
+        return editora;
+    }
+
+    public void setEditora(String editora){
+        this.editora = editora;
+    }
+
+    public int getNumeroPaginas(){
+        return numeroPaginas;
+    }
+
+    public void setNumeroPaginas(int numeroPaginas){
+        this.numeroPaginas = numeroPaginas;
+    }
+
+    @Override
+    public void exibirDetalhes(){
+        System.out.println("\nRevista: " + titulo);
+        System.out.println("Editora: " + editora);
+        System.out.println("Número de páginas: " + numeroPaginas);
+    }
+
+}
