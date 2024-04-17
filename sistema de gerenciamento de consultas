@@ -1,0 +1,328 @@
+public class Main {
+    public static void main(String[] args){
+        Gerenciador gerenciador = new Gerenciador();
+
+        gerenciador.cadastrarMedico("Dr. João", "123.124.654-96", "Reumatologista", "24.145-9");
+        gerenciador.cadastrarMedico("Dr. Marcos", "564.145.635-07", "Proctologista", "36.456-2");
+        gerenciador.cadastrarMedico("Dra. Júlia", "465.165.546-35", "Pediatra", "19.456-7");
+        gerenciador.cadastrarMedico("Dra. Carmem", "785.665.412-12", "Ortorrinolaringologista", "09.463-1");
+        gerenciador.cadastrarMedico("Dr. Pedro", "099.345.789-09", "Clínico Geral", "41.347-6");
+
+        String[] enfermidades0 = {"Hipertensão", "Diabetes"};
+        gerenciador.cadastrarPaciente("Elisabeth", "650.147.578-69", true, enfermidades0);
+        String[] enfermidades1 = {"Reumatismo", "Diabetes", "Obesidade"};
+        gerenciador.cadastrarPaciente("Carlos", "456.378.146-46", false, enfermidades1);
+        String[] enfermidades2 = {"Rinite","Alergia","Astigmatismo","Hepatite"};
+        gerenciador.cadastrarPaciente("Arnaldo", "653.145.256-02", true, enfermidades2);
+        String[] enfermidades3 = {"Osteoporose","Gastrite"};
+        gerenciador.cadastrarPaciente("Patrícia", "146.753.846-88", false, enfermidades3);
+        String[] enfermidades4 = {"Fratura"};
+        gerenciador.cadastrarPaciente("Maria", "645.123.479-13", true, enfermidades4);
+
+        gerenciador.cadastrarConsulta("123.124.654-99", "650.147.578-69", 3);
+        gerenciador.cadastrarConsulta("123.124.654-96", "650.147.578-69", 2);
+        gerenciador.cadastrarConsulta("123.124.654-96", "650.147.578-99", 4);
+        gerenciador.cadastrarConsulta("099.345.789-09", "645.123.479-13", 2);
+        gerenciador.cadastrarConsulta("099.345.789-09", "645.123.479-13", 3);
+        gerenciador.cadastrarConsulta("785.665.412-12", "146.753.846-88", 10);
+        gerenciador.cadastrarConsulta("099.345.789-09", "456.378.146-46", 7);
+        gerenciador.cadastrarConsulta("564.145.635-07", "653.145.256-02", 5);
+
+        gerenciador.listarConsultas();
+        gerenciador.excluirConsulta("123.124.654-96", "650.147.578-69", 1);
+        gerenciador.excluirConsulta("123.124.654-96", "650.147.578-69", 2);
+        gerenciador.listarConsultas();
+        gerenciador.listarMedicos();
+        gerenciador.excluirMedico("077.905.284-67");
+        gerenciador.excluirMedico("564.145.635-07");
+        gerenciador.listarMedicos();
+        gerenciador.listarPacientes();
+        gerenciador.excluirPaciente("077.905.284-67");
+        gerenciador.excluirPaciente("456.378.146-46");
+        gerenciador.listarPacientes();
+    }
+}
+
+import java.util.ArrayList;
+
+public class Gerenciador {
+    ArrayList<Medico> medicos;
+    ArrayList<Paciente> pacientes;
+    ArrayList<Consulta> consultas;
+    private Medico x;
+    private Paciente y;
+
+    public Gerenciador(){
+        medicos = new ArrayList<Medico>();
+        pacientes = new ArrayList<Paciente>();
+        consultas = new ArrayList<Consulta>();
+    }
+
+    public boolean cadastrarMedico(String nome, String cpf, String especialidade, String crm){
+        Medico medico = new Medico(nome, cpf, especialidade, crm);
+        medicos.add(medico);
+        return true;
+    }
+
+    public boolean cadastrarPaciente(String nome, String cpf, boolean convenio, String[] enfermidadesRegistradas){
+        Paciente paciente = new Paciente(nome, cpf, convenio, enfermidadesRegistradas);
+        pacientes.add(paciente);
+        return true;
+    }
+
+    public void cadastrarConsulta(String cpfMedico, String cpfPaciente, int dataAgendada){
+        int cont1=0;
+        int cont2=0;
+        int cont3=0;
+
+        for(Medico medico: medicos){
+            if(medico.getCpf().equals(cpfMedico)){
+                x = medico;
+                cont1++;
+                break;
+            }
+        }
+        for(Paciente paciente: pacientes){
+            if(paciente.getCpf().equals(cpfPaciente)){
+                y = paciente;
+                cont2++;
+                break;
+            }
+        }
+        for(Consulta consulta: consultas){
+            if(consulta.getDataAgendada() == dataAgendada){
+                cont3++;
+                break;
+            }
+        }
+        if(cont1 == 1 && cont2 == 1 && cont3 == 0){
+            Consulta consulta = new Consulta(x, y, dataAgendada);
+            consultas.add(consulta);
+            System.out.println("***************************************************\n\tConsulta Agendada!");
+        } else {
+            if(cont1 != 1 && cont2 == 1 && cont3 == 0){
+                System.out.println("***************************************************\n\tMédico não consta sistema!");
+            } else {
+                if(cont1 == 1 && cont2 != 1 && cont3 == 0){
+                    System.out.println("***************************************************\n\tPaciente não consta sistema!");
+                } else {
+                    if(cont1 == 1 && cont2 == 1 && cont3 != 0){
+                        System.out.println("***************************************************\n\tData indisponível!");
+                    }
+                }
+            }
+        }
+    }
+
+    public void listarConsultas(){
+        System.out.println("***************************************************\n\tConsultas Agendadas");
+        for(Consulta consulta: consultas){
+            System.out.println("\nPaciente: " + consulta.getPaciente().getNome() + "\nMédico: " + consulta.getMedico().getNome() + "\nDia: " + consulta.getDataAgendada());
+        }
+    }
+
+    public void listarMedicos(){
+        System.out.println("***************************************************\n\tMédicos Cadastrados");
+        for(Medico medico: medicos){
+            System.out.println("\nMédico: " + medico.getNome() + "\nCPF: " + medico.getCpf() + "\nEspecialidade: " + medico.getEspecialidade() + "\nCRM: " + medico.getCrm());
+        }
+    }
+
+    public void listarPacientes(){
+        System.out.print("***************************************************\n\tPacientes Cadastrados");
+        for(Paciente paciente: pacientes){
+            System.out.print("\n\nPaciente: " + paciente.getNome() + "\nCPF: " + paciente.getCpf());
+            if(paciente.getConvenio() == false){
+                System.out.print("\nConvêniado: Não" );
+            } else {
+                System.out.print("\nConvêniado: Sim" );
+            }
+            System.out.print("\nEnfermidades:");
+            for(int i=0; paciente.getEnfermidadesRegistradas()[i] != null; i++){
+                System.out.print(" " + paciente.getEnfermidadesRegistradas()[i]);
+            }
+        }
+        System.out.println();
+    }
+
+    public void excluirMedico(String cpf){
+        int x=0;
+        for(Medico medico: medicos){
+            if(cpf.equals(medico.getCpf())){
+                medicos.remove(medico);
+                x++;
+                break;
+            }
+        }
+        if(x==1){
+            System.out.println("***************************************************\n\tMédico Excluído!");
+        } else {
+            System.out.println("***************************************************\n\tMédico não encontrado!");
+        }
+    }
+
+    public void excluirPaciente(String cpf){
+        int x=0;
+        for(Paciente paciente: pacientes){
+            if(cpf.equals(paciente.getCpf())){
+                pacientes.remove(paciente);
+                x++;
+                break;
+            }
+        }
+        if(x==1){
+            System.out.println("***************************************************\n\tPaciente Excluído!");
+        } else {
+            System.out.println("***************************************************\n\tPaciente não encontrado!");
+        }
+    }
+
+    public void excluirConsulta(String cpfMedico, String cpfPaciente, int dia){
+        int x=0;
+        for(Consulta consulta: consultas){
+            if(consulta.getMedico().getCpf().equals(cpfMedico)){
+                if(consulta.getPaciente().getCpf().equals(cpfPaciente)){
+                    if(consulta.getDataAgendada() == dia){
+                        consultas.remove(consulta);
+                        x++;
+                        break;
+                    }
+                }
+            }
+        }
+        if(x>0){
+            System.out.println("***************************************************\n\tConsulta Desmarcada!");
+        } else {
+            System.out.println("***************************************************\n\tConsulta não encontrada!");
+        }
+    }
+
+}
+
+public class Consulta {
+    private Paciente paciente;
+    private Medico medico;
+    private int dataAgendada;
+
+    public Consulta(Medico medico, Paciente paciente, int dataAgendada){
+        this.medico = medico;
+        this.paciente = paciente;
+        this.dataAgendada = dataAgendada;
+    }
+
+    public Medico getMedico(){
+        return medico;
+    }
+
+    public void setMedico(Medico medico){
+        this.medico = medico;
+    }
+
+    public Paciente getPaciente(){
+        return paciente;
+    }
+
+    public void setPaciente(Paciente paciente){
+        this.paciente = paciente;
+    }
+
+    public int getDataAgendada(){
+        return dataAgendada;
+    }
+
+    public void setDataAgendada(int dataAgendada){
+        this.dataAgendada = dataAgendada;
+    }
+
+}
+
+public class Pessoa {
+    private String nome;
+    private String cpf;
+
+    public Pessoa(String nome, String cpf){
+        this.nome = nome;
+        this.cpf = cpf;
+    }
+
+    public Pessoa(){    }
+
+    public String getNome(){
+        return nome;
+    }
+
+    public void setNome(String nome){
+        this.nome = nome;
+    }
+
+    public String getCpf(){
+        return cpf;
+    }
+
+    public void setCpf(String cpf){
+        this.cpf = cpf;
+    }
+
+}
+
+public class Medico extends Pessoa {
+    private String especialidade;
+    private String crm;
+
+    public Medico(String nome, String cpf, String especialidade, String crm){
+        super(nome, cpf);
+        this.especialidade = especialidade;
+        this.crm = crm;
+    }
+
+    public Medico(){    }
+
+    public String getEspecialidade(){
+        return especialidade;
+    }
+
+    public void setEspecialidade(String especialidade){
+        this.especialidade = especialidade;
+    }
+
+    public String getCrm(){
+        return crm;
+    }
+
+    public void setCrm(String crm){
+        this.crm = crm;
+    }
+
+}
+
+public class Paciente extends Pessoa {
+    private boolean convenio;
+    private String[] enfermidadesRegistradas = new String[10];
+
+    public Paciente(String nome, String cpf, boolean convenio, String[] enfermidadesRegistradas){
+        super(nome, cpf);
+        this.convenio = convenio;
+        for(int i=0; i < enfermidadesRegistradas.length; i++)
+            this.enfermidadesRegistradas[i] = enfermidadesRegistradas[i];
+    }
+
+    public Paciente(){    }
+
+    public boolean getConvenio(){
+        return convenio;
+    }
+
+    public void setConvenio(boolean convenio){
+        this.convenio = convenio;
+    }
+
+    public String[] getEnfermidadesRegistradas(){
+        return enfermidadesRegistradas;
+    }
+
+    public void setEnfermidadesRegistradas(String[] enfermidadesRegistradas){
+        for(int i=0; i < enfermidadesRegistradas.length; i++)
+            this.enfermidadesRegistradas[i] = enfermidadesRegistradas[i];
+    }
+
+}
